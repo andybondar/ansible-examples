@@ -1,0 +1,8 @@
+---
+- name: Install libvirt + kvm
+  hosts: all
+  remote_user: user
+  become: yes
+
+  tasks:
+   - include: tasks/setup.yaml

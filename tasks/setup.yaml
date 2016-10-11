@@ -1,0 +1,39 @@
+---
+
+- name: KVM requires hardware virtualization support in the CPU. Check the compatibility
+  command: /bin/egrep -c '(vmx|svm)' /proc/cpuinfo
+  register: cores
+
+- name: Exit if CPU does not support virtualization
+  fail: msg="Your CPU does not support virtualization"
+  when: cores == "0"
+
+- name: Install cpu-checker
+  package: name=cpu-checker state=latest
+
+- name: Check if hardware acceleration enabled in BIOS
+  command: kvm-ok 
+
+
+- name: Install qemu-kvm
+  package: name=qemu-kvm state=latest
+
+- name: Install libvirt-bin
+  package: name=qemu-kvm state=latest
+
+- name: Install ubuntu-vm-builder
+  package: name=ubuntu-vm-builder state=latest
+
+- name: Install bridge-utils
+  package: name=bridge-utils state=latest
+
+- name: Install qemu-system
+  package: name=qemu-system state=latest
+
+- name: Add Ansible user to 'libvirtd' group
+  user: name={{ ansible_user }} groups=libvirtd append=yes
+
+- name: Add LC_ALL="en_US.UTF-8" to /etc/default/locale, if it doesn't exist
+  lineinfile: dest=/etc/default/locale state=present line=LC_ALL=\"en_US.UTF-8\" insertbefore=BOF
+
+#- debug: msg={{ ansible_user }} 
